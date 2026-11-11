@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="MyRecovery: refleksions- og læringsredskaber til sygeplejersker, der møder patienter med dobbeltdiagnose.">
+<meta name="theme-color" content="#d93a50">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23d93a50'/%3E%3Cpath d='M32 50V30' stroke='%23fff' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M32 34C20 34 14 26 14 16c12 0 18 7 18 18z' fill='%232bb3a3'/%3E%3Cpath d='M32 28c0-10 7-16 18-16 0 11-6 17-18 16z' fill='%23ffc93c'/%3E%3C/svg%3E">
+<title>MyRecovery – refleksionsapp til sygeplejersker</title>
+<style>
+:root{--bg:#eef2f3;--surf:#fff;--ink:#17323a;--mut:#58717a;--line:#cfdbde;--acc:#1f6f78;--acc-ink:#fff;--warm:#b97a12;--warm-bg:#fbf1da;--ok:#2d7a4f;--ok-bg:#e1f2e8;--bad:#9a3b3b;--bad-bg:#f8e4e4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1c20;--surf:#172a30;--ink:#e6eef0;--mut:#9bb1b8;--line:#2b4249;--acc:#5cb7bf;--acc-ink:#0f1c20;--warm:#e0b04d;--warm-bg:#3a3018;--ok:#6fcf97;--ok-bg:#173326;--bad:#f09a9a;--bad-bg:#3b2020}}
+:root[data-theme="dark"]{--bg:#0f1c20;--surf:#172a30;--ink:#e6eef0;--mut:#9bb1b8;--line:#2b4249;--acc:#5cb7bf;--acc-ink:#0f1c20;--warm:#e0b04d;--warm-bg:#3a3018;--ok:#6fcf97;--ok-bg:#173326;--bad:#f09a9a;--bad-bg:#3b2020}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.2;margin:0 0 .5em}
+h1{font-size:2rem}h2{font-size:1.5rem}h3{font-size:1.1rem}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+p{margin:0 0 .9em;max-width:68ch}.mut{color:var(--mut)}.small{font-size:.9rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:20px}
+.tile{display:block;width:100%;text-align:left;background:var(--surf);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;padding:14px;color:inherit;font:inherit;cursor:pointer}
+.tile b{display:block;font-family:Georgia,serif;font-size:1.05rem;margin-bottom:4px}
+.tile span{color:var(--mut);font-size:.9rem}
+.tile.needle{border-left-color:var(--warm)}
+button,.btn{font:inherit;cursor:pointer}
+.btn{background:var(--acc);color:var(--acc-ink);border:0;border-radius:8px;padding:9px 16px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--acc);border:1px solid var(--acc)}
+:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+.back{background:none;border:0;color:var(--acc);padding:0;margin-bottom:14px;font-weight:600}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
+textarea,input[type=text]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px}
+textarea{min-height:84px;resize:vertical}
+label{display:block;font-weight:600;margin:10px 0 4px}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:6px 0}
+.opt:hover{border-color:var(--acc)}
+.opt.sel{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.fb{border-radius:8px;padding:10px 12px;margin-top:10px}
+.fb.ok{background:var(--ok-bg)}.fb.bad{background:var(--bad-bg)}.fb.neu{background:var(--warm-bg)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 14px}
+.chip.sel{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px}
+.card{background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center}
+.card i{display:block;font-style:normal;font-size:2rem}
+.card.sel{border-color:var(--warm);background:var(--warm-bg)}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden}.bar>div{height:100%;background:var(--acc)}
+.scale{display:flex;gap:6px;margin:6px 0 14px}.scale button{flex:1;padding:8px 0;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px}
+.scale button.sel{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.q{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.tag{display:inline-block;font-size:.8rem;background:var(--warm-bg);color:var(--warm);border-radius:6px;padding:1px 8px;margin-bottom:6px}
+.note{font-size:.85rem;color:var(--mut);border-top:1px solid var(--line);margin-top:28px;padding-top:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@400;700&display=swap">
+<style>
+:root,:root:not([data-theme="light"]){--bg:#e3f1fd;--surf:#fff;--ink:#1d2b53;--mut:#56658a;--line:#bcd8f2;--acc:#c8283f;--acc-ink:#fff;--warm:#8a5a00;--warm-bg:#fff1c2;--ok:#16684a;--ok-bg:#d6f5e4;--bad:#a82a38;--bad-bg:#fde0e3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14213f;--surf:#1d2d55;--ink:#f1f5ff;--mut:#aab9de;--line:#34487a;--acc:#ff8a96;--acc-ink:#14213f;--warm:#ffd166;--warm-bg:#4a3b12;--ok:#7fe0ae;--ok-bg:#16402f;--bad:#ffa0aa;--bad-bg:#4a2030}}
+body{font-family:Nunito,"Trebuchet MS",system-ui,sans-serif}
+h1,h2,h3{font-family:Fredoka,"Trebuchet MS",sans-serif;font-weight:600}
+.hero{position:relative;overflow:hidden;background:#d93a50;color:#fff;border-radius:28px;padding:22px 20px;margin-bottom:14px}
+.hero h1{color:#fff;margin-bottom:.3em}.hero p{max-width:34ch;margin:0}
+.sun{position:absolute;right:-6px;top:-8px;font-size:5.2rem;line-height:1}
+.panel{border-radius:20px;border:2px solid var(--line)}
+.pots{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:8px;margin-top:12px}
+.pot{text-align:center;background:var(--bg);border-radius:14px;padding:6px 0}
+.pot .pl{display:block;font-size:1.8rem;line-height:1.2}.pot .ic{font-size:.95rem;opacity:.85}
+.bar{height:14px;border-radius:9px;margin:8px 0}.bar>div{background:linear-gradient(90deg,#2bb3a3,#ffc93c);transition:width .4s}
+.tiles{gap:14px}
+.tile{position:relative;border:0;border-radius:22px;background:var(--c);color:#1d2b53;padding:16px;min-height:124px;box-shadow:0 4px 0 rgba(29,43,83,.2);transition:transform .15s}
+.tile:nth-child(odd){transform:rotate(-1deg)}.tile:nth-child(even){transform:rotate(1deg)}.tile:hover{transform:rotate(0) translateY(-3px)}
+.tile .em{display:block;font-size:2.3rem;font-style:normal;line-height:1.1;margin-bottom:4px}
+.tile .st{position:absolute;right:12px;top:10px;font-size:1.6rem;font-style:normal}
+.tile b{font-family:Fredoka,sans-serif;font-weight:600}.tile span{color:#1d2b53;opacity:.85}
+.btn{border-radius:999px;padding:10px 20px;box-shadow:0 3px 0 rgba(0,0,0,.2)}.btn:active{transform:translateY(2px);box-shadow:none}
+.opt{border-radius:14px;border-width:2px}.chip{border-width:2px}
+.thead{display:flex;gap:14px;align-items:center;background:var(--c);color:#1d2b53;border-radius:22px;padding:14px 16px;margin-bottom:16px}
+.thead h2{margin:0}.thead p{margin:0;font-size:.95rem}.thead .big{font-size:2.6rem;line-height:1}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:#1d2b53;color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:20}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:8px;align-items:center;background:linear-gradient(135deg,#fff 0%,#cfe6fb 100%);color:var(--ink);padding:20px 6px 0 22px}
+.hero h1{color:var(--ink)}.hero svg{width:100%;height:auto;display:block}
+@media (max-width:560px){.hero{grid-template-columns:1fr;padding:20px 0 0}.hero .ht{padding:0 20px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero{background:linear-gradient(135deg,#1d2d55,#14213f)}}
+.needle{transform-box:fill-box;transform-origin:center;animation:sw 2.4s ease-out}
+@keyframes sw{0%{transform:rotate(-80deg)}60%{transform:rotate(20deg)}100%{transform:rotate(0)}}
+.pot{background:linear-gradient(var(--bg) 62%,#b98660 62%)}.pot .ic{color:#fff;opacity:1}
+.road{display:flex;align-items:center;margin:16px 2px 8px}
+.stp{flex:1;display:flex;align-items:center;justify-content:flex-end}
+.stp:before{content:"";flex:1;height:4px;border-radius:2px;background:var(--line)}
+.stp.on:before{background:#2bb3a3}
+.stp i{width:18px;height:18px;border-radius:50%;background:var(--line);border:3px solid var(--surf);box-shadow:0 0 0 2px var(--line)}
+.stp.on i{background:#2bb3a3;box-shadow:0 0 0 2px #2bb3a3}
+.stp.cur i{background:#ffc93c;width:26px;height:26px;box-shadow:0 0 0 3px #ffc93c}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.bdg{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;border-radius:999px;padding:4px 12px 4px 5px;border:2px dashed var(--line);color:var(--mut);filter:grayscale(1);opacity:.75}
+.bdg.on{border:2px solid #ffc93c;background:var(--warm-bg);color:var(--ink);filter:none;opacity:1}
+.bdg i{font-style:normal;width:26px;height:26px;border-radius:50%;background:var(--surf);display:grid;place-items:center}
+.tile,.tile:nth-child(odd),.tile:nth-child(even){transform:none;border-radius:24px 24px 24px 6px;overflow:hidden}
+.tile:hover{transform:translateY(-3px)}
+.tile:before{content:"";position:absolute;right:-20px;bottom:-22px;width:88px;height:88px;border-radius:50%;background:rgba(255,255,255,.35)}
+.tile .em{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;font-size:1.5rem;margin-bottom:8px}
+.thead{position:relative;overflow:hidden}
+.thead:after{content:"";position:absolute;right:-24px;top:-34px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.35)}
+.thead .big{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;font-size:1.8rem;flex:none}
+.cf{position:fixed;top:-14px;width:9px;height:14px;border-radius:2px;z-index:30;pointer-events:none;animation:fall 2.2s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){.needle{animation:none}.cf{display:none}}
+</style>
+<style>
+.pbox{max-width:280px;margin:0 auto 6px}.pbox svg{width:100%;display:block}
+#lt{opacity:0;transform-box:fill-box;transform-origin:center}.drop #lt{animation:drop 1.5s ease-in forwards}
+@keyframes drop{0%{transform:translateY(-10px) rotate(-14deg);opacity:0}20%{opacity:1}80%{transform:translateY(70px) rotate(3deg);opacity:1}100%{transform:translateY(84px) scale(.7);opacity:0}}
+.glow{animation:pulse 3s ease-in-out infinite}@keyframes pulse{50%{opacity:.6}}
+.traffic{display:flex;gap:14px;justify-content:center;margin:10px 0 14px}
+.tl{width:62px;height:62px;border-radius:50%;background:var(--c);display:grid;place-items:center;font-size:1.9rem;opacity:.25;transform:scale(.85)}
+.tl.on{opacity:1;transform:scale(1.15);box-shadow:0 0 0 5px var(--surf),0 0 0 8px var(--c)}
+.mini{display:flex;align-items:center;gap:8px;font-size:.9rem;margin:6px 0}.mini span{width:112px;flex:none}.mini .bar{flex:1;margin:0}
+.mirror{width:min(88%,350px);aspect-ratio:3/4;margin:6px auto 18px;border-radius:50%/46%;border:12px solid #e0b04d;box-shadow:0 0 0 4px #b8862b,0 12px 26px rgba(23,50,90,.28),inset 0 0 40px rgba(255,255,255,.6);background:radial-gradient(ellipse at 30% 20%,#fff,#cfe6fb 60%,#a9d0f2);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:12% 14%;position:relative;color:#1d2b53}
+.mirror:before{content:"";position:absolute;left:18%;top:8%;width:16%;height:32%;border-radius:50%;background:rgba(255,255,255,.55);transform:rotate(20deg)}
+.mirror .mq{font-family:Fredoka,sans-serif;font-size:1.2rem;line-height:1.3}.mirror small{margin-top:10px;opacity:.7}
+.cockpit{display:flex;gap:14px;align-items:center}.cockpit>div{flex:1}
+.lamp{width:26px;height:26px;border-radius:50%;flex:none}.lamp.on{background:#ffb300;box-shadow:0 0 14px 4px rgba(255,179,0,.55)}.lamp.off{background:#3fae6a;box-shadow:0 0 14px 4px rgba(63,174,106,.55)}
+.flight .q{font-family:Fredoka,sans-serif;font-size:1.35rem;margin:.4em 0 1em}
+.bigc{text-align:center}.bigc svg{width:min(100%,340px)}.bigc text{fill:var(--ink);font:600 11px Nunito,sans-serif}.bigc text.hot{fill:#c8283f;font:800 13px Nunito,sans-serif}
+#nd{transform-origin:150px 150px;transform-box:view-box;transition:transform .9s cubic-bezier(.3,1.5,.5,1)}.bigc h3{margin:6px 0 0}
+@media (prefers-reduced-motion:reduce){.glow{animation:none}.drop #lt{animation-duration:.01s}}
+</style>
+<style>
+.gw svg{width:min(100%,380px);display:block;margin:6px auto 2px}.gw text{fill:var(--mut);font:600 11px Nunito,sans-serif}
+.gn{transform-origin:200px 200px;transform-box:view-box;transition:transform .9s cubic-bezier(.3,1.4,.5,1)}
+.verdict{padding:4px 0 4px 10px;margin-top:8px}
+.gmap svg{width:100%;max-width:440px;border-radius:16px;display:block;margin:0 auto}
+.gmap svg text{fill:#1d2b53;font:700 11px Nunito,sans-serif;paint-order:stroke;stroke:#e8e2d2;stroke-width:3px}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+var app=document.getElementById('app'),S={};
+try{S=JSON.parse(localStorage.getItem('hm')||'{}')}catch(e){S={}}
+function save(){try{localStorage.setItem('hm',JSON.stringify(S))}catch(e){}}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function g(k,d){return S[k]===undefined?d:S[k]}
+var HSVG='<svg viewBox="0 0 320 190" role="img" aria-label="Illustration: en vej med bro og kompas, mennesker hånd i hånd og spirende planter"><circle cx="268" cy="34" r="20" fill="#ffc93c"/><path d="M268 4v6M268 58v6M238 34h6M292 34h6M247 13l4 4M285 51l4 4M289 13l-4 4M251 51l-4 4" stroke="#ffc93c" stroke-width="3" stroke-linecap="round"/><path d="M0 160Q70 120 150 146T320 128V190H0Z" fill="#9ad9bf"/><path d="M60 190C100 160 130 168 160 138S230 96 262 66" fill="none" stroke="#ffd1d6" stroke-width="16" stroke-linecap="round"/><path d="M60 190C100 160 130 168 160 138S230 96 262 66" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="6 8"/><path d="M126 122q24-28 48 0" fill="none" stroke="#1d2b53" stroke-width="4" stroke-linecap="round"/><path d="M126 122h48" stroke="#1d2b53" stroke-width="3"/><circle cx="62" cy="42" r="17" fill="#fff" stroke="#ff6b6b" stroke-width="4"/><g class="needle"><path d="M62 29l5 13h-10z" fill="#d93a50"/><path d="M62 55l-5-13h10z" fill="#1d2b53"/></g><g fill="#2bb3a3"><circle cx="22" cy="140" r="6"/><rect x="15" y="147" width="14" height="24" rx="7"/></g><g fill="#8a5cd0"><circle cx="44" cy="140" r="6"/><rect x="37" y="147" width="14" height="24" rx="7"/></g><g fill="#ff6b6b"><circle cx="66" cy="140" r="6"/><rect x="59" y="147" width="14" height="24" rx="7"/></g><g fill="#ffc93c"><circle cx="88" cy="140" r="6"/><rect x="81" y="147" width="14" height="24" rx="7"/></g><path d="M27 156h12M49 156h12M71 156h12" stroke="#1d2b53" stroke-width="3" stroke-linecap="round"/><path d="M232 152v-16M258 148v-24M288 144v-34" stroke="#2f8f5f" stroke-width="3"/><ellipse cx="226" cy="136" rx="7" ry="3.5" transform="rotate(-30 226 136)" fill="#4caf7a"/><ellipse cx="264" cy="124" rx="7" ry="3.5" transform="rotate(30 264 124)" fill="#4caf7a"/><circle cx="288" cy="106" r="8" fill="#ff6b6b"/><circle cx="288" cy="106" r="3" fill="#ffc93c"/></svg>';
+var BG=[['Første skridt','👣',function(){return total()>=1}],['Detektiv','🔍',function(){return pts('detektor')>=8}],['Spejlmester','🪞',function(){return pts('spejl')>=8}],['Samtalepartner','💬',function(){return pts('sim')>=9}],['Kompasfører','🧭',function(){return pts('kompas')>=8}],['Teamspiller','🎭',function(){return pts('pandora')>=4}]];
+function badges(){return BG.map(function(b){var on=b[2]();return'<span class="bdg'+(on?' on':'')+'" title="'+b[0]+'"><i aria-hidden="true">'+b[1]+'</i>'+b[0]+(on?'':' (låst)')+'</span>'}).join('')}
+function confetti(){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;var cs=['#ffc93c','#ff6b6b','#2bb3a3','#8a5cd0','#4da3ff'];for(var i=0;i<36;i++){var s=document.createElement('span');s.className='cf';s.style.cssText='left:'+(10+Math.random()*80)+'vw;background:'+cs[i%5]+';animation-delay:'+(Math.random()*.4)+'s';document.body.appendChild(s);setTimeout(s.remove.bind(s),2800)}}
+var DECO={pandora:['🎭','#ffb3c1'],barometer:['🌡️','#ffd86b'],detektor:['🔍','#8fe0d2'],spejl:['🪞','#c9b3f5'],kort:['🃏','#ffb68a'],autopilot:['🤖','#9fd3ff'],sim:['💬','#b8e986'],kompas:['🧭','#ffcf8a'],gps:['📍','#f6a6e0']};
+var LV=[[0,'Nysgerrig'],[6,'Opmærksom'],[16,'Reflekteret'],[32,'Anerkendende'],[55,'Relationsstærk'],[85,'Recovery-ambassadør']];
+function long10(x){return String(x||'').trim().length>=10}
+function pts(k){try{var a;
+ if(k==='pandora'){a=S.pq||[];var n=0;a.forEach(function(q){n+=q.a.length});return Math.max(0,a.length-2)*2+n}
+ if(k==='barometer'){var c=(S.bar||[]).filter(Boolean).length;return c+(c>=8?4:0)}
+ if(k==='detektor')return (S.cs||0)*2+((S.ci||0)>=4?3:0);
+ if(k==='spejl'){a=S.mir||{};return Object.keys(a).filter(function(i){return long10(a[i])}).length*2}
+ if(k==='kort')return Math.min((S.kk||[]).length,4)*2;
+ if(k==='autopilot'){a=S.ap||{c:[],n:''};return Math.min(a.c.length,4)+(long10(a.n)?4:0)}
+ if(k==='sim')return S.sp||0;
+ if(k==='kompas')return (S.kpd?8:0)+(S.kp&&S.kp.v?2:0);
+ if(k==='gps'){var m=Object.keys(S.gps||{}).length;return m+(m>=5?3:0)}
+}catch(e){}return 0}
+function total(){return TOOLS.reduce(function(s,t){return s+pts(t[0])},0)}
+function level(t){var i=0;LV.forEach(function(l,j){if(t>=l[0])i=j});var n=LV[i+1];return{i:i,name:LV[i][1],pct:n?Math.round((t-LV[i][0])/(n[0]-LV[i][0])*100):100,next:n?(n[0]-t)+' point til næste niveau: '+n[1]:'Du har nået det højeste niveau – tak for din refleksion!'}}
+function stage(p){return p>=8?'🌻':p>=4?'🌿':p>=1?'🌱':'🌰'}
+var tt;function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){e.classList.remove('show')},2200)}
+function set(k,v){var b=total();S[k]=v;save();var a=total();if(a>b){level(a).i>level(b).i?(toast('🎉 Nyt niveau: '+level(a).name),confetti()):toast('⭐ +'+(a-b)+' point')}}
+
+var TOOLS=[
+['pandora','Pandoras æske','Stil et refleksionsspørgsmål til hele personalegruppen.'],
+['barometer','Stigma-barometer','Se, hvor fordomme kan sidde hos dig og i gruppen.'],
+['detektor','Stigmadetektoren','Spot skjulte fordomme i cases: ord, handlinger og antagelser.'],
+['spejl','Stigmaspejlet','Undersøg egne holdninger og forforståelser før mødet.'],
+['kort','Billedekort','Sig det uden at sige det – med patienten.'],
+['autopilot','Min faglige autopilot','Opdag rutiner og automatiske reaktioner.'],
+['sim','Den svære samtale','Øv mistillid, afvisning, tilbagefald og konflikt.'],
+['kompas','Livets kompasnål','Patientens vigtigste værdi som samtalestarter – og til journal.'],
+['gps','Relations-GPS','Find ud af, hvor I er i relationen, og hvad der skal til næste gang.']
+];
+
+function home(){
+ var t=total(),L=level(t);var h='<div class="hero"><div class="ht"><h1>MyRecovery</h1><p>Øvelser i anerkendelse, refleksion og relation – for dig og dit team. Spil dig gennem dem, og se din faglige have vokse.</p></div>'+HSVG+'</div><div class="panel garden"><div class="row" style="justify-content:space-between"><b>'+L.name+'</b><span>⭐ '+t+' point</span></div><div class="road" role="img" aria-label="Niveau '+(L.i+1)+' af '+LV.length+'">'+LV.map(function(l,j){return'<span class="stp'+(j<=L.i?' on':'')+(j===L.i?' cur':'')+'"><i></i></span>'}).join('')+'</div><p class="small mut" style="margin:0">'+L.next+'</p><div class="pots">'+TOOLS.map(function(x){return'<div class="pot" title="'+x[1]+'"><span class="pl">'+stage(pts(x[0]))+'</span><span class="ic" aria-hidden="true">'+DECO[x[0]][0]+'</span></div>'}).join('')+'</div><div class="badges">'+badges()+'</div></div><div class="tiles">';
+ TOOLS.forEach(function(x){h+='<button class="tile" style="--c:'+DECO[x[0]][1]+'" data-k="'+x[0]+'"><i class="st" aria-hidden="true">'+stage(pts(x[0]))+'</i><i class="em" aria-hidden="true">'+DECO[x[0]][0]+'</i><b>'+x[1]+'</b><span>'+x[2]+'</span></button>'});
+ h+='</div><p class="note">Gemmer kun på din egen enhed. Skriv aldrig cpr-nummer, navne eller andre persondata om patienter i redskaberne – undtagen i Livets kompasnål, hvor kun patientens egne ord og samtykke noteres, og teksten kopieres til journalen af dig.</p>';
+ app.innerHTML=h;
+ app.querySelectorAll('.tile').forEach(function(b){b.onclick=function(){open(b.dataset.k)}});
+}
+function open(k){
+ var t=TOOLS.filter(function(x){return x[0]===k})[0];
+ app.innerHTML='<button class="back" id="bk">‹ Alle redskaber</button><div class="thead" style="--c:'+DECO[k][1]+'"><span class="big" aria-hidden="true">'+DECO[k][0]+'</span><div><h2>'+t[1]+'</h2><p>'+t[2]+'</p></div></div><div id="v"></div>';
+ document.getElementById('bk').onclick=home;
+ V[k](document.getElementById('v'));
+ window.scrollTo(0,0);
+}
+var V={};
+
+/* 1 Pandoras æske */
+V.pandora=function(r){var drop=false;
+ var qs=g('pq',[{t:'Hvad gør vi, når en patient igen møder op påvirket – og hvad siger det om vores forventninger?',a:[]},{t:'Hvilket ord i vores journaler ville vi ikke selv kunne lide at læse om os selv?',a:[]}]);
+ function draw(){
+  var h='<div class="pbox'+(drop?' drop':'')+'">'+BOXSVG+'</div><div class="panel"><label for="nq">Dit refleksionsspørgsmål til gruppen</label><textarea id="nq" placeholder="Fx: Hvornår mister jeg troen på en patients forløb – og hvad sker der så i min måde at være på?"></textarea><p class="small mut">Formulér åbent og uden at pege på personer eller patienter.</p><button class="btn" id="post">Læg i æsken</button></div>';
+  qs.forEach(function(q,i){
+   h+='<div class="panel"><h3>'+esc(q.t)+'</h3>';
+   q.a.forEach(function(a){h+='<div class="q small">'+esc(a)+'</div>'});
+   h+='<div class="row q"><input type="text" id="a'+i+'" placeholder="Din refleksion" aria-label="Din refleksion"><button class="btn ghost" data-i="'+i+'">Svar</button></div></div>';
+  });
+  r.innerHTML=h;
+  drop=false;r.querySelector('#post').onclick=function(){var v=r.querySelector('#nq').value.trim();if(v){qs.unshift({t:v,a:[]});set('pq',qs);drop=true;draw()}};
+  r.querySelectorAll('[data-i]').forEach(function(b){b.onclick=function(){var i=b.dataset.i,v=r.querySelector('#a'+i).value.trim();if(v){qs[i].a.push(v);set('pq',qs);draw()}}});
+ }
+ draw();
+ r.insertAdjacentHTML('beforeend','<p class="note">Spørgsmål og svar ligger i denne version kun på din enhed. Til fælles brug i teamet skal appen kobles til en delt, driftsgodkendt database.</p>');
+};
+
+/* 2 Barometer */
+var BAR=['Patienter med dobbeltdiagnose er sværere at samarbejde med end andre.','Hvis en patient bruger rusmidler igen, har vedkommende ikke rigtig lyst til at blive rask.','Jeg tror på, at alle patienter kan komme sig – også dem, der har mange tilbagefald.','Jeg tager patientens smerteudsagn lige så alvorligt som hos andre patienter.','Jeg bliver mere kontrollerende, når jeg ved, at der har været misbrug.','Jeg ved, hvad patienten selv mener er vigtigst i sit liv.','Når en patient afviser behandling, er det mest et tegn på manglende indsigt.','Jeg taler om patienten på samme måde, når han/hun er til stede, som når han/hun ikke er.'];
+var REV=[0,0,1,1,0,1,0,1];
+V.barometer=function(r){
+ var a=g('bar',[]);
+ var h='<div class="panel" id="dept"></div><p>Vurdér hvert udsagn ærligt: 1 = helt uenig, 5 = helt enig. Der er ingen rigtige svar – formålet er at lægge mærke til mønstre.</p>';
+ BAR.forEach(function(t,i){h+='<div class="panel"><p><b>'+t+'</b></p><div class="scale" data-i="'+i+'">'+[1,2,3,4,5].map(function(n){return'<button data-n="'+n+'"'+(a[i]===n?' class="sel"':'')+'>'+n+' '+['🙅','🤨','🤔','🙂','💯'][n-1]+'</button>'}).join('')+'</div></div>'});
+ h+='<div class="panel" id="res"></div>';
+ r.innerHTML=h;
+ function dept(){var own=0,ok=a.filter(Boolean).length>=8;if(ok){a.forEach(function(v,i){own+=REV[i]?6-v:v});own/=8}var cs=[2.1,2.8,3.2,2.5,3.6];if(ok)cs.push(own);var cm=cs.reduce(function(x,y){return x+y},0)/cs.length,p=g('pat',0),ps=p?6-p:0,tt=ps?(cm+ps)/2:cm,c=tt<2.4?0:tt<3.2?1:2,F=['😀','😐','😠'],CL=['#3fae6a','#ffc93c','#e0475a'],M=['Grøn: afdelingen viser et åbent og anerkendende klima.','Gul: der er områder med risiko for stigma. Tag dem op i teamet.','Rød: tydelige tegn på stigma. Prioritér fælles refleksion.'];
+ function mb(l,x){return'<div class="mini"><span>'+l+'</span><div class="bar"><div style="width:'+Math.round((x-1)/4*100)+'%"></div></div></div>'}
+ var h='<h3>Afdelingens stigmafarve</h3><div class="gw">'+gauge(tt)+'</div><p class="verdict" style="border-left:6px solid '+CL[c]+'"><b>'+M[c]+'</b></p>'+mb('Kolleger ('+cs.length+')',cm)+(ps?mb('Patienter',ps):'')+'<p class="small mut">Samlet af kollegernes svar og patientens vurdering. Kollegatal er eksempeldata i prototypen.</p><label>Patientens vurdering: „Jeg bliver mødt som et helt menneske“ (1 = slet ikke, 5 = helt)</label><div class="scale">'+[1,2,3,4,5].map(function(n){return'<button data-p="'+n+'"'+(p===n?' class="sel"':'')+'>'+n+'</button>'}).join('')+'</div>';
+ var d=r.querySelector('#dept');d.innerHTML=h;d.querySelectorAll('[data-p]').forEach(function(b){b.onclick=function(){set('pat',+b.dataset.p);dept()}})}
+ function res(){dept();
+  var done=a.filter(Boolean).length,o='';
+  if(done<BAR.length){r.querySelector('#res').innerHTML='<p class="mut">Besvar alle udsagn ('+done+'/'+BAR.length+') for at se dit barometer.</p>';return}
+  var tot=0,hot=[];
+  BAR.forEach(function(t,i){var s=REV[i]?6-a[i]:a[i];tot+=s;if(s>=4)hot.push(t)});
+  var avg=tot/BAR.length,pct=Math.round((avg-1)/4*100);
+  o='<h3>Dit barometer</h3><div class="bar" role="img" aria-label="'+pct+' procent"><div style="width:'+pct+'%"></div></div><p class="small mut">Jo længere mod højre, jo flere udsagn, hvor fordomme kan have indflydelse på dit møde med patienten. Et skøn til refleksion – ikke en test.</p>';
+  o+=hot.length?'<p><b>Disse udsagn fik højest udslag:</b></p><ul>'+hot.map(function(x){return'<li>'+x+'</li>'}).join('')+'</ul><p>Tag dem med i Stigmaspejlet eller stil dem som spørgsmål i Pandoras æske.</p>':'<p>Ingen udsagn slår kraftigt ud. Overvej alligevel: hvor ville andre i teamet svare anderledes end dig?</p>';
+  r.querySelector('#res').innerHTML=o;
+ }
+ r.querySelectorAll('.scale').forEach(function(sc){sc.querySelectorAll('button').forEach(function(b){b.onclick=function(){a[sc.dataset.i]=+b.dataset.n;set('bar',a);sc.querySelectorAll('button').forEach(function(x){x.classList.remove('sel')});b.classList.add('sel');res()}})});
+ res();
+};
+
+/* 3 Detektor */
+var CASES=[
+{ty:'Formulering i journal',t:'„Patienten er manipulerende og non-compliant.“',o:['„Patienten har ikke taget medicin i tre dage og siger, at bivirkningerne er for generende.“','„Patienten er svær at samarbejde med.“','„Patienten er ikke motiveret for behandling.“'],c:0,e:'Det første er observerbart og viser patientens egen forklaring. De andre erstatter fakta med karakteristik, som lukker for nysgerrighed.'},
+{ty:'Handling',t:'En patient beder om smertestillende. Sygeplejersken tænker „han er jo afhængig“ og lader ham vente længere end andre.',o:['Vurdere smerter systematisk som hos alle andre, og drøfte bekymringer åbent med lægen.','Give det, han beder om, for at undgå konflikt.','Vente og se, om han opgiver.'],c:0,e:'Fordommen om, at patienten overdriver, kan give undervurderet smerte. Ens procedure og åben dialog beskytter både patient og relation.'},
+{ty:'Skjult fordom',t:'„Han er en af vores faste gæster.“',o:['Det er en sød og neutral bemærkning.','Det sætter patienten i en rolle som tilbagevendende problem og kan sænke forventningerne til ham.','Det er kun et problem, hvis patienten hører det.'],c:1,e:'Ord som „fast gæst“ og „drejedørspatient“ gør forløbet til patientens fejl. Det påvirker, hvor meget håb og tid han mødes med.'},
+{ty:'Handling',t:'Før samtalen gennemgår sygeplejersken først al historik om misbrug og voldelige episoder – og møder patienten med den i baghovedet.',o:['Starte med et åbent spørgsmål om, hvad der er vigtigt for patienten lige nu.','Springe al historik over.','Begynde med at konfrontere patienten med tidligere episoder.'],c:0,e:'Historik er vigtig for sikkerhed, men må ikke være første linse. Start med mennesket, og lad historikken supplere.'}];
+V.detektor=function(r){
+ var i=g('ci',0),sc=g('cs',0);
+ function draw(){
+  if(i>=CASES.length){r.innerHTML='<div class="panel"><h3>Du har været igennem alle cases</h3><p>Du fandt '+sc+' af '+CASES.length+' ved første forsøg. Det vigtigste er samtalen bagefter: hvilke ligner jeres hverdag?</p><button class="btn" id="rs">Start forfra</button></div>';r.querySelector('#rs').onclick=function(){i=0;sc=0;set('ci',0);set('cs',0);draw()};return}
+  var c=CASES[i];
+  r.innerHTML='<div class="panel"><span class="tag">'+c.ty+' · case '+(i+1)+' af '+CASES.length+'</span><p><b>'+c.t+'</b></p><p class="mut small">Hvad er den mest anerkendende vej videre, eller hvad er på spil?</p><div id="os">'+c.o.map(function(o,j){return'<button class="opt" data-j="'+j+'">'+o+'</button>'}).join('')+'</div><div id="fb"></div></div>';
+  r.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){
+   var j=+b.dataset.j,ok=j===c.c;if(ok)sc++;
+   r.querySelectorAll('.opt').forEach(function(x){x.disabled=true});
+   r.querySelector('#fb').innerHTML='<div class="fb '+(ok?'ok':'bad')+'"><b>'+(ok?'🔍 Godt set! +2 point.':'🤔 Ikke helt.')+'</b> '+c.e+'</div><p><button class="btn" id="nx">'+(i+1<CASES.length?'Næste case':'Se resultat')+'</button></p>';
+   r.querySelector('#nx').onclick=function(){i++;set('ci',i);set('cs',sc);draw()};
+  }});
+ }
+ draw();
+};
+
+/* 4 Spejl */
+var MIR=['Hvilken patientgruppe eller diagnose gør mig mest utålmodig eller mismodig? Hvor kommer det fra?','Hvad forventer jeg på forhånd af en patient med dobbeltdiagnose? Hvad ville der ske, hvis det var forkert?','Hvilke ord bruger jeg om patienter, når de ikke er til stede?','Hvornår ændrer jeg stemme, tempo eller kropssprog i mødet med denne patient?','Hvad ville patienten sige, at jeg ser hos ham eller hende – og hvad ser jeg ikke?','Hvad vil jeg gøre anderledes i morgen i ét konkret møde?'];
+V.spejl_old=function(r){
+ var a=g('mir',{});
+ var h='<p>Tag et konkret møde eller en konkret patient i tankerne (uden at nævne navn). Skriv kort – dine svar bliver på din enhed.</p>';
+ MIR.forEach(function(q,i){h+='<div class="panel"><label for="m'+i+'">'+q+'</label><textarea id="m'+i+'">'+esc(a[i]||'')+'</textarea></div>'});
+ r.innerHTML=h;
+ MIR.forEach(function(q,i){r.querySelector('#m'+i).oninput=function(e){a[i]=e.target.value;set('mir',a)}});
+};
+
+/* 5 Billedekort */
+var KORT={'Følelser':[['😔','Trist'],['😠','Vred'],['😰','Bange'],['😶','Tom'],['😌','Rolig'],['😊','Glad']],'Os imellem':[['🧱','En mur'],['🤝','Vi samarbejder'],['👀','Jeg bliver overvåget'],['🌉','En bro er ved at blive bygget'],['🚪','Jeg vil væk'],['🫶','Jeg bliver set']],'Behov':[['⏳','Tid'],['🔇','Ro'],['💬','At blive hørt'],['🧭','Medbestemmelse'],['👪','Min familie'],['🌱','Håb']]};
+V.kort_old=function(r){
+ var sel=g('kk',[]);
+ var h='<p>Sig det uden at sige det: Lad patienten pege på det eller de kort, der passer bedst lige nu. Spørg derefter nysgerrigt: <i>„Fortæl mig om det kort.“</i></p>';
+ Object.keys(KORT).forEach(function(c){h+='<h3>'+c+'</h3><div class="cards">'+KORT[c].map(function(k){var id=c+'|'+k[1];return'<button class="card'+(sel.indexOf(id)>-1?' sel':'')+'" data-id="'+id+'" aria-pressed="'+(sel.indexOf(id)>-1)+'"><i>'+k[0]+'</i>'+k[1]+'</button>'}).join('')+'</div>'});
+ h+='<div class="panel" style="margin-top:16px" id="sm"></div>';
+ r.innerHTML=h;
+ function sm(){r.querySelector('#sm').innerHTML=sel.length?'<h3>Valgt i dag</h3><p>'+sel.map(function(s){return esc(s.split('|')[1])}).join(', ')+'</p><p class="small mut">Spørg: „Hvad er det ved det kort?“ · „Hvornår havde du sidst det sådan?“ · „Hvad ville hjælpe, at jeg gør?“</p>':'<p class="mut">Ingen kort valgt endnu.</p>'}
+ r.querySelectorAll('.card').forEach(function(b){b.onclick=function(){var id=b.dataset.id,x=sel.indexOf(id);if(x>-1)sel.splice(x,1);else sel.push(id);b.classList.toggle('sel');b.setAttribute('aria-pressed',x<0);set('kk',sel);sm()}});
+ sm();
+};
+
+/* 6 Autopilot */
+var AUTO=['Jeg tjekker patientens rusmiddelhistorik, før jeg hilser.','Jeg stiller lukkede spørgsmål, fordi det går hurtigere.','Jeg siger „vi aftalte jo…“, når patienten afviger.','Jeg tolker en afvisning som manglende motivation.','Jeg skriver journal, mens patienten taler.','Jeg løber mere, når en patient er svær at nå.','Jeg undgår at spørge ind til tilbagefald.','Jeg overtager beslutninger for at holde dagens plan.'];
+V.autopilot_old=function(r){
+ var a=g('ap',{c:[],n:''});
+ var h='<p>Sæt kryds ved det, der ligner dig i en travl vagt. Autopilot er ikke en fejl – den sparer energi. Men den bør være noget, du vælger til.</p><div class="panel">';
+ AUTO.forEach(function(t,i){h+='<label style="font-weight:400"><input type="checkbox" data-i="'+i+'"'+(a.c.indexOf(i)>-1?' checked':'')+'> '+t+'</label>'});
+ h+='</div><div class="panel"><label for="an">Den rutine, jeg vil sætte på pause i denne uge – og hvad jeg gør i stedet</label><textarea id="an">'+esc(a.n)+'</textarea></div>';
+ r.innerHTML=h;
+ r.querySelectorAll('[type=checkbox]').forEach(function(b){b.onchange=function(){var i=+b.dataset.i,x=a.c.indexOf(i);if(b.checked&&x<0)a.c.push(i);if(!b.checked&&x>-1)a.c.splice(x,1);set('ap',a)}});
+ r.querySelector('#an').oninput=function(e){a.n=e.target.value;set('ap',a)};
+};
+
+/* 7 Simulator */
+var SIM=[
+{t:'Mistillid',p:'Jeg stoler ikke på jer. Alt, jeg siger, ender i min journal.',o:[['„Det kan du roligt stole på, vi har tavshedspligt.“','Beroligelsen overser, at han har ret i, at der noteres. Det kan øge mistilliden.',0],['„Det er rigtigt, vi skriver i journalen. Skal vi se på, hvad jeg skriver, så du kan sige til, hvis noget er forkert?“','Anerkender og tilbyder medbestemmelse. Det opbygger tillid gennem åbenhed.',2],['„Det er reglerne.“','Afslutter samtalen og gør patienten mindre til deltager.',0]],f:'Tak. Det er første gang, nogen har spurgt.'},
+{t:'Afvisning af behandling',p:'Jeg tager ikke den medicin mere. Det gør mig til en zombie.',o:[['„Så er det dit valg, men vi skriver, at du afviser.“','Respekterer valget, men uden nysgerrighed efter årsagen.',1],['„Fortæl mig, hvad der er sværest ved at være på den. Hvad vil du gerne have mere af i dit liv?“','Åbner for patientens oplevelse og værdier, uden at give op på medicinen.',2],['„Uden den bliver du indlagt igen.“','Truer og antager det værste. Det kan skabe modstand.',0]],f:'Jeg kan ikke mærke noget. Jeg vil bare være mig selv igen.'},
+{t:'Tilbagefald',p:'Jeg har taget stoffer igen i weekenden. Nu er det hele ødelagt, ikke?',o:[['„Nej, det er ikke ødelagt. Tak fordi du siger det. Hvad skete der op til weekenden?“','Anerkender ærligheden og normaliserer tilbagefald som en del af recovery.',2],['„Det er ærgerligt, du var jo så godt på vej.“','Kan forstærke skam og tanken om at have fejlet.',0],['„Vi må justere din plan med flere kontroller.“','Ensidig kontrol uden at forstå, hvad der skete.',1]],f:'Jeg troede, I ville blive vrede.'},
+{t:'Konflikt',p:'Du lyver! Du sagde, jeg måtte komme hjem i dag!',o:[['„Nu skal du falde ned, ellers kan vi ikke tale.“','Kræver ro uden at anerkende følelsen bag.',0],['„Jeg kan høre, du er rigtig vred, og at du forstod noget andet. Lad os finde ud af, hvad der blev sagt.“','Anerkender følelsen og søger fælles forståelse i stedet for at forsvare sig.',2],['„Det har jeg aldrig sagt.“','Fastholder sin version og optrapper.',0]],f:'Okay… Jeg blev bare så skuffet.'}];
+V.sim=function(r){
+ function menu(){
+  r.innerHTML='<p>Vælg en situation. Du får et udsagn fra patienten og tre mulige svar. Træn flere gange – og prøv også dem, du ikke tror på.</p><div class="tiles">'+SIM.map(function(s,i){return'<button class="tile" data-i="'+i+'"><b>'+s.t+'</b></button>'}).join('')+'</div>';
+  r.querySelectorAll('.tile').forEach(function(b){b.onclick=function(){run(SIM[b.dataset.i])}});
+ }
+ function run(s){
+  r.innerHTML='<div class="panel"><span class="tag">'+s.t+'</span><p><b>Patienten:</b> „'+s.p.replace(/^["„]|["“]$/g,'')+'“</p><p class="mut small">Hvordan svarer du?</p><div>'+s.o.map(function(o,j){return'<button class="opt" data-j="'+j+'">'+o[0]+'</button>'}).join('')+'</div><div id="fb"></div></div>';
+  r.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){
+   var o=s.o[b.dataset.j];set('sp',g('sp',0)+(o[2]===2?3:1));r.querySelectorAll('.opt').forEach(function(x){x.disabled=true});b.classList.add('sel');
+   r.querySelector('#fb').innerHTML='<div class="fb '+(o[2]===2?'ok':o[2]===1?'neu':'bad')+'">'+(o[2]===2?'🌟 +3 point · ':'🌱 +1 point · ')+o[1]+'</div>'+(o[2]===2?'<p class="mut small" style="margin-top:10px">Patienten svarer: „'+s.f+'“</p>':'')+'<p class="row"><button class="btn" id="ag">Prøv igen</button><button class="btn ghost" id="mn">Andre situationer</button></p>';
+   r.querySelector('#ag').onclick=function(){run(s)};r.querySelector('#mn').onclick=menu;
+  }});
+ }
+ menu();
+};
+
+/* 8 Kompasnål */
+var VAL=['Familie','Frihed','Tryghed','Arbejde','Natur','Børn','Tro','Venner','Kreativitet','Respekt','Sundhed','Ærlighed'];
+V.kompas_old=function(r){
+ var a=g('kp',{v:'',w:'',o:'',c:false});
+ var h='<p>Den fysiske kompasnål er en lille genstand, patienten vælger til sin vigtigste værdi. Den kan ligge på bordet i samtalen: <i>„Hvad gør det til den vigtigste for dig?“</i></p><div class="panel"><label>Værdi</label><div class="chips" id="vc">'+VAL.map(function(v){return'<button class="chip'+(a.v===v?' sel':'')+'">'+v+'</button>'}).join('')+'</div>';
+ h+='<label for="cv">Eller patientens egen værdi</label><input type="text" id="cv" value="'+(VAL.indexOf(a.v)<0?esc(a.v):'')+'"><label for="cw">Patientens egne ord om, hvorfor</label><textarea id="cw">'+esc(a.w)+'</textarea><label for="co">Genstand (fx sten, nøgle, fjer)</label><input type="text" id="co" value="'+esc(a.o)+'"></div>';
+ h+='<div class="panel"><h3>Til journalen?</h3><p class="small">Ja – som patientens egne ord og værdi, ikke som sygeplejerskens vurdering. Det kan gøre forløbet personligt og give kolleger en fælles retning. Det forudsætter patientens samtykke, og at I følger lokal journalpraksis.</p><label style="font-weight:400"><input type="checkbox" id="cc"'+(a.c?' checked':'')+'> Patienten har sagt ja til, at det noteres</label><p><button class="btn" id="mk">Lav journaltekst</button></p><textarea id="jt" readonly aria-label="Journaltekst" style="display:none"></textarea><p class="small mut" id="cm"></p></div>';
+ r.innerHTML=h;
+ function pick(v){a.v=v;set('kp',a);r.querySelectorAll('.chip').forEach(function(c){c.classList.toggle('sel',c.textContent===v)})}
+ r.querySelectorAll('.chip').forEach(function(c){c.onclick=function(){r.querySelector('#cv').value='';pick(c.textContent)}});
+ r.querySelector('#cv').oninput=function(e){pick(e.target.value);r.querySelectorAll('.chip').forEach(function(c){c.classList.remove('sel')})};
+ r.querySelector('#cw').oninput=function(e){a.w=e.target.value;set('kp',a)};
+ r.querySelector('#co').oninput=function(e){a.o=e.target.value;set('kp',a)};
+ r.querySelector('#cc').onchange=function(e){a.c=e.target.checked;set('kp',a)};
+ r.querySelector('#mk').onclick=function(){
+  var t=r.querySelector('#jt'),m=r.querySelector('#cm');
+  if(!a.c){m.textContent='Sæt kryds ved samtykke først.';return}
+  if(!a.v){m.textContent='Vælg eller skriv en værdi.';return}
+  t.value='Patientens livskompas (i patientens egne ord): Vigtigste værdi: '+a.v+'.'+(a.w?' Patienten siger: „'+a.w+'“.':'')+(a.o?' Symbolsk genstand: '+a.o+'.':'')+' Noteret med patientens samtykke. Bruges som udgangspunkt for samtaler om mål og behandling.';
+  t.style.display='block';t.select();set('kpd',true);m.textContent='Markér og kopiér teksten ind i journalen. Direkte overførsel kræver kobling til jeres journalsystem.';
+ };
+};
+
+/* 9 GPS */
+var GPS=[['Tid','Har patienten oplevet, at jeg har tid til at lytte uden at skulle videre?','Afsæt fx 10 minutter uden afbrydelser, og sig tydeligt, hvor lang tid I har.'],['Tydelighed','Ved patienten, hvad der skal ske, hvorfor, og hvad der skrives?','Forklar næste skridt, og spørg: „Hvad er uklart for dig?“'],['Anerkendelse','Har patienten fået at vide, hvad der virker, og er vedkommende blevet mødt i sin oplevelse?','Spejl en konkret styrke eller anstrengelse, du har set.'],['Medbestemmelse','Har patienten haft reel indflydelse på noget i dag?','Tilbyd et valg, fx tid, sted eller rækkefølge.'],['Tillid','Har patienten oplevet, at jeg holder det, jeg lover – også de små ting?','Gør én lille ting nøjagtigt, som aftalt, og sig det højt.']];
+V.gps_old=function(r){
+ var a=g('gps',{});
+ var h='<p>Vurdér ud fra din fornemmelse af patienten lige nu. GPS’en viser, hvor du kan ændre kurs.</p>';
+ GPS.forEach(function(q,i){h+='<div class="panel"><h3>'+q[0]+'</h3><p>'+q[1]+'</p><div class="scale" data-i="'+i+'">'+[['Ja',3],['Delvist',2],['Nej',1]].map(function(o){return'<button data-n="'+o[1]+'"'+(a[i]===o[1]?' class="sel"':'')+'>'+o[0]+'</button>'}).join('')+'</div></div>'});
+ h+='<div class="panel" id="rt"></div>';
+ r.innerHTML=h;
+ function rt(){
+  var low=GPS.filter(function(q,i){return a[i]&&a[i]<3});
+  var n=Object.keys(a).length,o='';
+  if(n<GPS.length)o='<p class="mut">Besvar alle fem pejlemærker ('+n+'/'+GPS.length+').</p>';
+  else if(!low.length)o='<h3>På kurs</h3><p>Relationen ser ud til at have bæredygtigt fundament. Hold fast i det, der virker, og spørg patienten, hvad der skal fortsætte.</p>';
+  else o='<h3>Næste kursændring</h3>'+low.map(function(q){var i=GPS.indexOf(q);return'<p><b>'+q[0]+(a[i]===1?' (mangler)':' (delvist)')+':</b> '+q[2]+'</p>'}).join('');
+  r.querySelector('#rt').innerHTML=o;
+ }
+ r.querySelectorAll('.scale').forEach(function(sc){sc.querySelectorAll('button').forEach(function(b){b.onclick=function(){a[sc.dataset.i]=+b.dataset.n;set('gps',a);sc.querySelectorAll('button').forEach(function(x){x.classList.remove('sel')});b.classList.add('sel');rt()}})});
+ rt();
+};
+var BOXSVG='<svg viewBox="0 0 260 190" role="img" aria-label="Pandoras æske med lys, hvor brevene lægges i"><defs><radialGradient id="gl"><stop offset="0" stop-color="#fff3b0"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient></defs><g class="glow"><ellipse cx="130" cy="86" rx="120" ry="76" fill="url(#gl)"/><path d="M92 104L48 8h164l-44 96z" fill="#fff3b0" opacity=".45"/></g><ellipse cx="130" cy="104" rx="58" ry="11" fill="#ffe27a"/><g id="lt"><rect x="112" y="40" width="36" height="26" rx="3" fill="#fff" stroke="#1d2b53" stroke-width="2"/><path d="M112 42l18 14 18-14" fill="none" stroke="#d93a50" stroke-width="2"/></g><rect x="70" y="104" width="120" height="68" rx="9" fill="#d93a50"/><rect x="62" y="98" width="136" height="14" rx="6" fill="#ff6b6b"/><path d="M100 148h60" stroke="#ffc93c" stroke-width="4" stroke-linecap="round"/><circle cx="130" cy="132" r="7" fill="#ffc93c"/></svg>';
+function fc(c,m,b){return'<circle cx="24" cy="24" r="19" fill="'+c+'"/><circle cx="17.5" cy="21" r="2.2" fill="#1d2b53"/><circle cx="30.5" cy="21" r="2.2" fill="#1d2b53"/><g stroke="#1d2b53" stroke-width="2.5" fill="none" stroke-linecap="round">'+m+b+'</g>'}
+var IC={'Trist':fc('#9fd3ff','<path d="M17 34q7-7 14 0"/>','<path d="M13 15l7 3M35 15l-7 3"/>'),'Vred':fc('#ff8a8a','<path d="M17 34q7-5 14 0"/>','<path d="M13 14l8 5M35 14l-8 5"/>'),'Bange':fc('#c9b3f5','<ellipse cx="24" cy="34" rx="3" ry="4"/>','<path d="M13 16q4-4 8 0M27 16q4-4 8 0"/>'),'Tom':fc('#cfd8dc','<path d="M18 33h12"/>',''),'Rolig':fc('#8fe0d2','<path d="M18 31q6 4 12 0"/>',''),'Glad':fc('#ffd86b','<path d="M15 29q9 10 18 0"/>',''),
+'En mur':'<g fill="#ff9d76" stroke="#1d2b53" stroke-width="2"><rect x="5" y="8" width="18" height="10"/><rect x="25" y="8" width="18" height="10"/><rect x="5" y="20" width="9" height="10"/><rect x="16" y="20" width="18" height="10"/><rect x="36" y="20" width="7" height="10"/><rect x="5" y="32" width="18" height="10"/><rect x="25" y="32" width="18" height="10"/></g>',
+'Vi samarbejder':'<circle cx="14" cy="14" r="6" fill="#2bb3a3"/><rect x="8" y="21" width="12" height="20" rx="6" fill="#2bb3a3"/><circle cx="34" cy="14" r="6" fill="#ff6b6b"/><rect x="28" y="21" width="12" height="20" rx="6" fill="#ff6b6b"/><path d="M19 29h10" stroke="#1d2b53" stroke-width="3" stroke-linecap="round"/>',
+'Jeg bliver overvåget':'<path d="M3 24q21-20 42 0q-21 20-42 0z" fill="#fff" stroke="#1d2b53" stroke-width="2.5"/><circle cx="24" cy="24" r="8" fill="#8a5cd0"/><circle cx="24" cy="24" r="3.5" fill="#1d2b53"/>',
+'En bro er ved at blive bygget':'<path d="M3 34q21-30 42 0" stroke="#1d2b53" stroke-width="3.5" fill="none"/><path d="M12 24v14M24 17v21M36 24v14" stroke="#ff9d76" stroke-width="3"/><path d="M2 40h44" stroke="#4da3ff" stroke-width="4"/>',
+'Jeg vil væk':'<rect x="8" y="6" width="20" height="36" rx="2" fill="#ffd86b" stroke="#1d2b53" stroke-width="2.5"/><circle cx="23" cy="25" r="1.8" fill="#1d2b53"/><path d="M30 24h13M38 18l6 6-6 6" stroke="#d93a50" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+'Jeg bliver set':'<path d="M24 41C8 29 5 20 10 13c4-5 11-3 14 2 3-5 10-7 14-2 5 7 2 16-14 28z" fill="#ff6b6b" stroke="#1d2b53" stroke-width="2.5"/>',
+'Tid':'<circle cx="24" cy="24" r="18" fill="#fff" stroke="#1d2b53" stroke-width="3"/><path d="M24 12v12l8 5" stroke="#d93a50" stroke-width="3" fill="none" stroke-linecap="round"/>',
+'Ro':'<path d="M32 8a16 16 0 1 0 8 24 14 14 0 0 1-8-24z" fill="#ffd86b" stroke="#1d2b53" stroke-width="2.5"/><path d="M10 12l1.5 3.5L15 17l-3.5 1.5L10 22l-1.5-3.5L5 17l3.5-1.5z" fill="#8a5cd0"/>',
+'At blive hørt':'<rect x="4" y="6" width="26" height="18" rx="8" fill="#9fd3ff" stroke="#1d2b53" stroke-width="2.5"/><rect x="18" y="22" width="26" height="18" rx="8" fill="#ffb3c1" stroke="#1d2b53" stroke-width="2.5"/>',
+'Medbestemmelse':'<path d="M24 6v38" stroke="#1d2b53" stroke-width="3"/><path d="M24 10h14l4 4-4 4H24z" fill="#2bb3a3" stroke="#1d2b53" stroke-width="2"/><path d="M24 22H10l-4 4 4 4h14z" fill="#ffc93c" stroke="#1d2b53" stroke-width="2"/>',
+'Min familie':'<circle cx="14" cy="14" r="5" fill="#2bb3a3"/><rect x="8" y="20" width="12" height="20" rx="6" fill="#2bb3a3"/><circle cx="34" cy="14" r="5" fill="#8a5cd0"/><rect x="28" y="20" width="12" height="20" rx="6" fill="#8a5cd0"/><circle cx="24" cy="26" r="4" fill="#ffc93c"/><rect x="19" y="31" width="10" height="13" rx="5" fill="#ffc93c"/>',
+'Håb':'<path d="M24 42V24" stroke="#2f8f5f" stroke-width="3.5"/><path d="M24 26C14 26 10 18 11 11c8 0 13 5 13 15z" fill="#4caf7a" stroke="#1d2b53" stroke-width="2"/><path d="M24 22c0-7 5-12 13-12 1 7-3 12-13 12z" fill="#8fe0a0" stroke="#1d2b53" stroke-width="2"/><path d="M12 42h24" stroke="#b98660" stroke-width="4" stroke-linecap="round"/>'};
+V.kort=function(r){V.kort_old(r);r.querySelectorAll('.card').forEach(function(b){var l=b.dataset.id.split('|')[1];b.querySelector('i').innerHTML='<svg viewBox="0 0 48 48" width="64" height="64" aria-hidden="true">'+(IC[l]||'')+'</svg>'})};
+V.spejl=function(r){var a=g('mir',{}),i=0;
+ function draw(){r.innerHTML='<div class="mirror" aria-live="polite"><span class="mq">'+MIR[i]+'</span><small>Spørgsmål '+(i+1)+' af '+MIR.length+'</small></div><div class="panel"><label for="ma">Dit svar – kun for dig</label><textarea id="ma">'+esc(a[i]||'')+'</textarea><p class="row"><button class="btn ghost" id="pv"'+(i?'':' disabled')+'>Forrige</button><button class="btn" id="nx">'+(i<MIR.length-1?'Næste spørgsmål':'Færdig')+'</button></p></div>';
+ r.querySelector('#ma').oninput=function(e){a[i]=e.target.value;set('mir',a)};
+ r.querySelector('#pv').onclick=function(){i--;draw()};
+ r.querySelector('#nx').onclick=function(){if(i<MIR.length-1){i++;draw()}else toast('🪞 Tak for din ærlighed')}}
+ draw()};
+var ALT=['Tag en indånding og stil ét åbent spørgsmål','Sig højt, hvad jeg ser, og spørg om jeg har ret','Giv to minutter til kun at lytte','Spørg patienten, hvad der er vigtigst lige nu'];
+V.autopilot=function(r){var a=g('ap',{c:[],n:''});a.p=a.p||{};var i=0,m=0;
+ function draw(){var tk=a.c.length,pc=Math.round((AUTO.length-tk)/AUTO.length*100),h='<div class="panel cockpit"><span class="lamp '+(tk>=AUTO.length?'off':'on')+'"></span><div><b>Autopilot '+pc+'% tændt</b><div class="bar"><div style="width:'+pc+'%"></div></div><small class="mut">Hver rutine, du tager styringen over, sænker autopiloten.</small></div></div>';
+ if(i>=AUTO.length)h+='<div class="panel flight"><h3>Landing</h3><p>Du har taget styringen på '+tk+' af '+AUTO.length+' rutiner.</p>'+Object.keys(a.p).map(function(k){return'<p class="small">• '+esc(AUTO[k])+' → <b>'+esc(a.p[k])+'</b></p>'}).join('')+'<button class="btn" id="rs">Flyv igen</button></div>';
+ else if(!m)h+='<div class="panel flight"><span class="tag">Rutine '+(i+1)+' af '+AUTO.length+'</span><p class="q">'+AUTO[i]+'</p><div class="row"><button class="btn" id="me">Det er mig</button><button class="btn ghost" id="sk">Ikke mig</button></div></div>';
+ else h+='<div class="panel flight"><p><b>'+AUTO[i]+'</b></p><p class="mut small">Tag styringen: hvad gør du i stedet?</p>'+ALT.map(function(t,j){return'<button class="opt" data-j="'+j+'">'+t+'</button>'}).join('')+'</div>';
+ r.innerHTML=h;var q=function(s){return r.querySelector(s)};
+ if(q('#rs'))q('#rs').onclick=function(){i=0;m=0;draw()};
+ if(q('#sk'))q('#sk').onclick=function(){i++;draw()};
+ if(q('#me'))q('#me').onclick=function(){m=1;draw()};
+ r.querySelectorAll('.opt').forEach(function(b){b.onclick=function(){if(a.c.indexOf(i)<0)a.c.push(i);a.p[i]=ALT[b.dataset.j];a.n=ALT[b.dataset.j];set('ap',a);m=0;i++;draw()}})}
+ draw()};
+function compass(L){var n=L.length,s='<svg viewBox="0 0 300 300" role="img" aria-label="Kompas"><circle cx="150" cy="150" r="142" fill="#ff6b6b"/><circle cx="150" cy="150" r="132" style="fill:var(--surf)"/><circle cx="150" cy="150" r="84" fill="none" style="stroke:var(--line)" stroke-width="2" stroke-dasharray="3 6"/>';L.forEach(function(v,i){var t=i*360/n*Math.PI/180;s+='<text x="'+(150+108*Math.sin(t)).toFixed(1)+'" y="'+(154-108*Math.cos(t)).toFixed(1)+'" text-anchor="middle">'+v+'</text>'});return s+'<g id="nd"><path d="M150 52l11 98h-22z" fill="#d93a50"/><path d="M150 248l-11-98h22z" fill="#1d2b53"/></g><circle cx="150" cy="150" r="9" fill="#ffc93c" stroke="#1d2b53" stroke-width="3"/></svg>'}
+V.kompas=function(r){V.kompas_old(r);var w=document.createElement('div');w.className='panel bigc';w.innerHTML=compass(VAL)+'<h3 id="cl"></h3>';r.insertBefore(w,r.firstChild);
+ function aim(v){var i=VAL.indexOf(v);if(i>-1)w.querySelector('#nd').style.transform='rotate('+i*30+'deg)';w.querySelectorAll('text').forEach(function(t,j){t.classList.toggle('hot',j===i)});w.querySelector('#cl').textContent=v?'Din kurs: '+v:'Vælg din vigtigste værdi'}
+ r.querySelectorAll('.chip').forEach(function(c){c.addEventListener('click',function(){aim(c.textContent)})});
+ r.querySelector('#cv').addEventListener('input',function(e){aim(e.target.value)});
+ aim(g('kp',{}).v||'')};
+V.gps=function(r){V.gps_old(r);var w=document.createElement('div'),N=GPS.map(function(q){return q[0]});w.className='panel bigc';w.innerHTML=compass(N)+'<h3 id="cl"></h3>';r.insertBefore(w,r.firstChild);
+ function aim(){var a=g('gps',{}),h=w.querySelector('#cl'),ix=-1,m=3;w.querySelectorAll('text').forEach(function(t){t.classList.remove('hot')});
+ if(Object.keys(a).length<5){h.textContent='Besvar pejlemærkerne – nålen finder næste kurs';return}
+ for(var i=0;i<5;i++)if(a[i]<m){m=a[i];ix=i}
+ if(ix<0){h.textContent='På kurs – hold fast i det, der virker';return}
+ w.querySelector('#nd').style.transform='rotate('+ix*72+'deg)';w.querySelectorAll('text')[ix].classList.add('hot');h.textContent='Næste kurs: '+N[ix]}
+ r.querySelectorAll('.scale button').forEach(function(b){b.addEventListener('click',aim)});aim()};
+function gauge(tt){var C=['#e5202a','#ee5223','#f59220','#ffcc0a','#a8c93a','#62bb46','#4f9a47'],st=180/7,s='<svg viewBox="0 0 400 232" role="img" aria-label="Måler for stigmaklima">',P=function(r,a){var t=(180+a)*Math.PI/180;return(200+r*Math.cos(t)).toFixed(1)+' '+(200+r*Math.sin(t)).toFixed(1)};
+ C.forEach(function(c,i){var a0=i*st+1.5,a1=(i+1)*st-1.5;s+='<path d="M'+P(190,a0)+'A190 190 0 0 1 '+P(190,a1)+'L'+P(110,a1)+'A110 110 0 0 0 '+P(110,a0)+'Z" fill="'+c+'"/>'});
+ var f=Math.max(0,Math.min(1,(5-tt)/4));
+ return s+'<g class="gn" style="transform:rotate('+(f*180-90).toFixed(1)+'deg)"><path d="M193 200L200 62l7 138z" fill="#1d1d1d"/><circle cx="200" cy="200" r="16" fill="#1d1d1d"/><circle cx="200" cy="200" r="6" fill="#fff"/></g><text x="6" y="224">Tydeligt stigma</text><text x="394" y="224" text-anchor="end">Anerkendende klima</text></svg>'}
+var MP=[[70,70],[150,38],[250,38],[335,80],[335,165]];
+function rt(i){var p=MP[i];return'M200 250V165C200 125 '+p[0]+' '+(p[1]+55)+' '+p[0]+' '+p[1]}
+function gmap(N,ix,st){var s='<svg viewBox="0 0 400 260" role="img" aria-label="Kort med bil på vej mod næste kurs"><rect width="400" height="260" fill="#e8e2d2"/><path d="M0 200Q60 175 95 235L80 260H0Z" fill="#cfe3b8"/><path d="M-10 118Q130 150 410 105" fill="none" stroke="#b9d8f3" stroke-width="20"/><path d="M0 22H400M0 100L400 70" stroke="#f6dd7a" stroke-width="3" fill="none"/>';
+ MP.forEach(function(p,i){s+='<path d="'+rt(i)+'" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/>'});
+ if(ix>=0)s+='<path d="'+rt(ix)+'" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round"/><path d="'+rt(ix)+'" fill="none" stroke="#2f6fe4" stroke-width="8" stroke-linecap="round"/>';
+ MP.forEach(function(p,i){var h=i===ix;s+='<g transform="translate('+p[0]+' '+p[1]+') scale('+(h?1.35:1)+')"><path d="M0 0L-9-17A11 11 0 1 1 9-17Z" fill="'+(h?'#d93a50':'#2f6fe4')+'"/><circle cx="0" cy="-24" r="4" fill="#fff"/></g><text x="'+p[0]+'" y="'+(p[1]+15)+'" text-anchor="middle">'+N[i]+'</text>'});
+ var d=st===0?'':st===1?rt(ix):'M200 250V172',du=matchMedia('(prefers-reduced-motion:reduce)').matches?'0.01s':'3s';
+ s+='<g'+(st===0?' transform="translate(200 246) rotate(-90)"':'')+'>'+(d?'<animateMotion dur="'+du+'" fill="freeze" rotate="auto" path="'+d+'"/>':'')+'<ellipse cx="0" cy="2" rx="15" ry="9" fill="#000" opacity=".15"/><rect x="-13" y="-7" width="26" height="14" rx="4" fill="#2f6fe4"/><rect x="-4" y="-5" width="10" height="10" rx="2" fill="#fff" opacity=".85"/><rect x="7" y="-5" width="4" height="10" fill="#9fd3ff"/></g></svg>';return s}
+V.gps=function(r){V.gps_old(r);var w=document.createElement('div'),N=GPS.map(function(q){return q[0]});w.className='panel bigc gmap';r.insertBefore(w,r.firstChild);
+ function aim(){var a=g('gps',{}),ix=-1,m=3,st=0,t='Besvar pejlemærkerne – bilen kører mod næste kurs';
+ if(Object.keys(a).length>=5){for(var i=0;i<5;i++)if(a[i]<m){m=a[i];ix=i}st=ix<0?2:1;t=ix<0?'På kurs – hold fast i det, der virker':'Næste kurs: '+N[ix]}
+ w.innerHTML=gmap(N,ix,st)+'<h3>'+t+'</h3>'}
+ r.querySelectorAll('.scale button').forEach(function(b){b.addEventListener('click',aim)});aim()};
+home();
+</script>
+</body>
+</html>
